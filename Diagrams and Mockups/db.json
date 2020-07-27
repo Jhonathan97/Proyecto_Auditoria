@@ -1,0 +1,32 @@
+{
+    "nombre": "Prueba Auditoria",
+    "nombre_clientes": [
+        {
+            "nombre": "Francisco",
+            "apellido": "Montoya"
+        },
+        {
+            "nombre": "Duvan",
+            "apellido": "Mejia"
+        }
+    ]
+}
+
+
+{
+    "nombre": "Prueba Auditoria 2",
+    "nombre_clientes": [
+        {
+            "nombre": "Alejandra",
+            "apellido": "Bermudez"
+        },
+        {
+            "nombre": "Duvir",
+            "apellido": "Castaño"
+        }
+    ],
+    "miembros_equipo": [
+        {"_id": "5f1d06e832d14430e863bbf2"}
+    ]
+
+}
