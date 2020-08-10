@@ -14,4 +14,8 @@ router.post('/signup', cors.corsWithOptions, userController.registrarUsuario);
 
 router.post('/login', cors.corsWithOptions, passport.authenticate('local'), userController.loginUsuario);
 
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get('/auth/google/callback',passport.authenticate('google'), userController.getGoogleToken);
+
 module.exports = router;

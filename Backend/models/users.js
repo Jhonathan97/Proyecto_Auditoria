@@ -11,6 +11,12 @@ var User = new Schema({
         type: String,
         required: true
     },
+    correo_electronico: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    googleId: String,
     admin: {
         type: Boolean,
         default: false

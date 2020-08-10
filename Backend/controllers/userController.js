@@ -38,7 +38,18 @@ exports.getUsuarios = (req, res, next) => {
  * para que el error pueda ser visualizado
  */
 exports.registrarUsuario = (req, res, next) => {
-    User.register(new User({ username: req.body.username, nombre: req.body.nombre, apellido: req.body.apellido }), req.body.password, (err, user) => {
+    const email = /\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}\b/;
+    if (req.body.password.length < 8) {
+        err = new Error('La contraseña con la que se desea registrar debe ser máximo de 8 caracteres!');
+        err.status = 412;
+        return next(err);
+    }
+    if (!email.test(req.body.correo_electronico)) {
+        err = new Error('El formato del correo electronico no cumple con lo siguiente example@dominio.com!');
+        err.status = 412;
+        return next(err);
+    }
+    User.register(new User({ username: req.body.username, nombre: req.body.nombre, apellido: req.body.apellido, correo_electronico: req.body.correo_electronico }), req.body.password, (err, user) => {
         if (err) {
             res.statusCode = 500;
             res.setHeader('Content-Type', 'application/json');
@@ -66,3 +77,18 @@ exports.loginUsuario = (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.json({ success: true, token: token, status: 'Bienvenido!' });
 };
+
+/**
+ * Función que me permite obtener el token dando acceso a la aplicación logueandose con una cuenta de google
+ * @param {*} req recibe una solicitud GET
+ * @param {*} res si al loguearse con un cuenta de google resulta éxitoso respondera con un statusCode: 200 y un objeto 
+ * JSON con un token que me permite identificarme como usuario logueado.
+ */
+exports.getGoogleToken = (req, res) => {
+    if (req.user) {
+        var token = authenticate.getToken({ _id: req.user._id });
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({ success: true, token: token, status: 'Bienvenido!' });
+    }
+}
