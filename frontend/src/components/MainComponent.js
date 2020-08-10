@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import NavInforme from './NavInformeComponent';
 import { ITEMS } from '../shared/items';
+import EditarInforme from './EditarInforme'
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 
 class Main extends Component {
@@ -17,8 +18,7 @@ class Main extends Component {
 
         const ItemWithId = ({ match }) => {
             return (
-               /* <DishDetail dish={this.props.items.filter((item) => item.id === parseInt(match.params.itemId, 10))[0]} />*/
-               <div></div>
+               <EditarInforme itemcito={this.state.items.filter((item) => item.id === parseInt(match.params.itemId, 10))[0]} />
             );
         }
         
