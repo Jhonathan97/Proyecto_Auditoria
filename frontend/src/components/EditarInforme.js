@@ -6,8 +6,10 @@ class EditarInforme extends Component {
 
     render() {
         return (
-            < div >
+            < div className = "editar">
+                <br></br>
             <h2>{this.props.item.nombre}</h2>
+            <br></br>
             <CKEditor
                 onInit={editor => {
                     console.log('Editor is ready to use!', editor);
