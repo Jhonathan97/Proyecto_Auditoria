@@ -39,13 +39,18 @@ exports.getUsuarios = (req, res, next) => {
  */
 exports.registrarUsuario = (req, res, next) => {
     const email = /\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}\b/;
+    if (req.body.username.length && req.body.nombre.length && req.body.apellido.length && req.body.correo_electronico.length && req.body.password.length) {
+        err = new Error('Todos los campos son requeridos!');
+        err.status = 412;
+        return next(err);
+    }
     if (req.body.password.length < 8) {
-        err = new Error('La contraseña con la que se desea registrar debe ser máximo de 8 caracteres!');
+        err = new Error('La contraseña con la que se desea registrar debe ser mínimo de 8 caracteres!');
         err.status = 412;
         return next(err);
     }
     if (!email.test(req.body.correo_electronico)) {
-        err = new Error('El formato del correo electronico no cumple con lo siguiente example@dominio.com!');
+        err = new Error('El formato del correo electrónico no cumple con lo siguiente example@dominio.com!');
         err.status = 412;
         return next(err);
     }
@@ -71,11 +76,29 @@ exports.registrarUsuario = (req, res, next) => {
  * @param {*} res si el usuario y la contraseña son correctas respondera con un statusCode: 200 y un objeto JSON con un
  * token que me permite identificarme como usuario logueado.
  */
-exports.loginUsuario = (req, res) => {
-    var token = authenticate.getToken({ _id: req.user._id });
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
-    res.json({ success: true, token: token, status: 'Bienvenido!' });
+exports.loginUsuario = (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+        if (err)
+            return next(err);
+
+        if (!user) {
+            res.statusCode = 401;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({ success: false, status: 'Inicio de sesión fallido!', err: info });
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                res.statusCode = 401;
+                res.setHeader('Content-Type', 'application/json');
+                res.json({ success: false, status: 'Inicio de sesión fallido!', err: 'No se pudo iniciar sesión!' });
+            }
+
+            var token = authenticate.getToken({ _id: req.user._id });
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({ success: true, token: token, status: 'Bienvenido!' });
+        });
+    })(req, res, next);
 };
 
 /**

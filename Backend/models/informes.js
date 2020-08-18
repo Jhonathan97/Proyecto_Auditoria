@@ -23,7 +23,13 @@ const informeSchema = new Schema({
         type: String,
         required: true
     },
-    items: [itemSchema]
+    items: [itemSchema],
+    auditoria: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Auditoria',
+        required: true,
+        unique: true
+    }
 }, {
     timestamps: true
 });

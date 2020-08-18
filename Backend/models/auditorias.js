@@ -25,11 +25,7 @@ const auditoriaSchema = new Schema({
     miembros_equipo: [{
         type: mongoose.Schema.ObjectId,
         ref: 'User'
-    }],
-    informe: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Informe'
-    }
+    }]
 }, {
     timestamps: true
 });
