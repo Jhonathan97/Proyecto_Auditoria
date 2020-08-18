@@ -12,7 +12,7 @@ router.get('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.veri
 
 router.post('/signup', cors.corsWithOptions, userController.registrarUsuario);
 
-router.post('/login', cors.corsWithOptions, passport.authenticate('local'), userController.loginUsuario);
+router.post('/login', cors.corsWithOptions, userController.loginUsuario);
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
