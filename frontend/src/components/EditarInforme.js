@@ -4,6 +4,18 @@ import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 
 class EditarInforme extends Component {
 
+    state = {
+        content : " "
+    }
+
+    handleCKeditorState  = (event,editor) =>{
+        const data = editor.getData();
+        this.setState({
+            content: data
+        })
+        console.log(data);
+    }
+
     render() {
         return (
             < div className = "editar">
@@ -18,9 +30,17 @@ class EditarInforme extends Component {
                     editor.ui.getEditableElement().parentElement.insertBefore(
                         editor.ui.view.toolbar.element,
                         editor.ui.getEditableElement()
-                    );
+                    ); 
                 }}
-                onChange={(event, editor) => console.log({ event, editor })}
+                config = {
+                    {
+                        ckfinder: {
+                            uploadUrl: '/uploads'
+                        }
+                    }
+                }
+                onChange= {this.handleCKeditorState}
+                //onChange={(event, editor) => console.log({ event, editor })}
                 editor={DecoupledEditor}
                 data="<p>Esta es el área de edición!</p>"
             />
