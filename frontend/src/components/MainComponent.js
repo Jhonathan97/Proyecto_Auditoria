@@ -3,6 +3,10 @@ import NavInforme from './NavInformeComponent';
 import EditarInforme from './EditarInforme';
 import Login from './Login';
 import { loginUser, logoutUser, fetchAuditorias, loginUserGoogle } from '../redux/ActionCreators';
+import MisAuditorias from './MisAuditorias';
+import EnviarInforme from "./EnviarInforme";
+import CrearAuditoria from "./CrearAuditoria";
+import { loginUser, logoutUser, fetchAuditorias } from '../redux/ActionCreators';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -45,7 +49,10 @@ class Main extends Component {
             <div>
 
                 <Switch>
-                    <Route path="/login" component={() => <Login loginUser={this.props.loginUser} auth={this.props.auth} loginUserGoogle={this.props.loginUserGoogle} />} />
+                    <Route path="/login" component={() => <Login loginUser={this.props.loginUser} auth={this.props.auth} />} />
+                    <Route path="/misAuditorias"  component={() =><MisAuditorias/> }/>
+                    <Route path="/crearAuditoria"  component={() =><CrearAuditoria/> }/>
+                    <Route path="/enviarInforme"  component={() =><EnviarInforme/> }/>
                     <PrivateRoute path="/item/:itemId" component={ItemWithId} />
                     <Redirect to="/login" />
                 </Switch>
