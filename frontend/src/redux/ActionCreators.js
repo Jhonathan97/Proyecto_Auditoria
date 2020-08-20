@@ -38,7 +38,6 @@ export const loginUser = (creds) => (dispatch) => {
             } else {
                 var error = new Error('Error ' + response.status + ': ' + response.statusText);
                 error.response = response;
-                throw error;
             }
         },
             error => {

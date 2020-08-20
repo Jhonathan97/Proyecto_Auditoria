@@ -8,6 +8,8 @@ const cors = require('./cors');
 var router = express.Router();
 
 /* GET users listing. */
+router.options('*', cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+
 router.get('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, userController.getUsuarios);
 
 router.post('/signup', cors.corsWithOptions, userController.registrarUsuario);
