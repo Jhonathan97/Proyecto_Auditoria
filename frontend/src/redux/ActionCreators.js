@@ -33,11 +33,12 @@ export const loginUser = (creds) => (dispatch) => {
         body: JSON.stringify(creds)
     })
         .then(response => {
-            if (response.ok) {
+            if (response.ok || response.status === 401) {
                 return response;
             } else {
                 var error = new Error('Error ' + response.status + ': ' + response.statusText);
                 error.response = response;
+                throw error;
             }
         },
             error => {
@@ -53,11 +54,25 @@ export const loginUser = (creds) => (dispatch) => {
                 dispatch(receiveLogin(response));
             }
             else {
-                var error = new Error('Error ' + response.status);
+                var error = new Error(response.status);
                 error.response = response;
                 throw error;
             }
         })
+        .catch(error => dispatch(loginError(error.message)))
+};
+
+
+export const loginUserGoogle = () => (dispatch) => {
+    return fetch(baseUrl + 'users/auth/google', {
+        credentials: 'same-origin'
+    })
+        .then(response => {
+            console.log(response);
+        },
+            error => {
+                throw error;
+            })
         .catch(error => dispatch(loginError(error.message)))
 };
 

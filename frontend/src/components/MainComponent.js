@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import NavInforme from './NavInformeComponent';
 import EditarInforme from './EditarInforme';
 import Login from './Login';
-import { loginUser, logoutUser, fetchAuditorias } from '../redux/ActionCreators';
+import { loginUser, logoutUser, fetchAuditorias, loginUserGoogle } from '../redux/ActionCreators';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -16,7 +16,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     loginUser: (creds) => dispatch(loginUser(creds)),
     logoutUser: () => dispatch(logoutUser()),
-    fetchAuditorias: () => dispatch(fetchAuditorias())
+    fetchAuditorias: () => dispatch(fetchAuditorias()),
+    loginUserGoogle: () => dispatch(loginUserGoogle()),
 });
 
 class Main extends Component {
@@ -44,7 +45,7 @@ class Main extends Component {
             <div>
 
                 <Switch>
-                    <Route path="/login" component={() => <Login loginUser={this.props.loginUser} auth={this.props.auth} />} />
+                    <Route path="/login" component={() => <Login loginUser={this.props.loginUser} auth={this.props.auth} loginUserGoogle={this.props.loginUserGoogle} />} />
                     <PrivateRoute path="/item/:itemId" component={ItemWithId} />
                     <Redirect to="/login" />
                 </Switch>

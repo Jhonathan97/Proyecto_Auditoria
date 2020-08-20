@@ -4,7 +4,7 @@ import { Loading } from './LoadingComponent';
 import GoogleButton from 'react-google-button';
 import { Control, LocalForm, Errors } from 'react-redux-form';
 
-const loginInvalido = (errMess) => errMess !== null;
+const required = (val) => val && val.length;
 
 class Login extends Component {
 
@@ -22,24 +22,26 @@ class Login extends Component {
 		if (this.props.auth.isLoading) {
 			return (
 				<div className="container">
-					<div className="row">
+					<div className="row row-content">
 						<Loading />
 					</div>
 				</div>
 			);
 		}
 		return (
-			<LocalForm className="login-form" model="login" onSubmit={(values) => this.handleSubmit(values)}>
+			<LocalForm className="login-form" onSubmit={(values) => this.handleSubmit(values)}>
 				<Row className="form-group">
 					<Label htmlFor="username">Usuario</Label>
-					<Control.text model=".username" id="username" name="username" placeholder="Ingrese su usuario" className="form-control" />
+					<Control.text model=".username" id="username" name="username" placeholder="Ingrese su usuario" className="form-control" validators={{ required }} />
+					<Errors className="text-danger" model=".username" show="touched" messages={{required: 'El campo usuario es requerido'}} />
 				</Row>
 				<Row className="form-group">
 					<Label htmlFor="password">Contraseña</Label>
-					<Control.text type="password" model=".password" id="password" name="password" placeholder="Ingrese su contraseña" className="form-control" />
+					<Control.text type="password" model=".password" id="password" name="password" placeholder="Ingrese su contraseña" className="form-control" validators={{ required }}/>
+					<Errors className="text-danger" model=".password" show="touched" messages={{required: 'El campo contraseña es requerido'}} />
 				</Row>
 				<div>
-					{this.props.auth.errMess !== null ? <p className="text-danger">Usuario o contraseña invalido</p> : null}
+					{this.props.auth.errMess !== null ? <p className="text-danger">{this.props.auth.errMess}</p> : null}
 				</div>
 				<Button className="btn-lg btn-dark btn-block" type="submit">Iniciar Sesión</Button>
 				<div className="text-center pt-3">
@@ -48,8 +50,9 @@ class Login extends Component {
 				<div className="google-button">
 					<hr></hr>
 					<GoogleButton
-						onClick={() => { console.log('Google button clicked') }}
+						onClick={() => this.props.loginUserGoogle()}
 					/>
+					{/*<a href={`${baseUrl}/users/auth/google`}><GoogleButton /></a>*/}
 				</div>
 			</ LocalForm>
 		);

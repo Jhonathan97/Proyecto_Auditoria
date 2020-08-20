@@ -84,7 +84,7 @@ exports.loginUsuario = (req, res, next) => {
         if (!user) {
             res.statusCode = 401;
             res.setHeader('Content-Type', 'application/json');
-            res.json({ success: false, status: 'Inicio de sesión fallido!', err: info });
+            res.json({ success: false, status: 'El Usuario o Contraseña es incorrecta!', err: info });
         }
         req.logIn(user, (err) => {
             if (err) {
