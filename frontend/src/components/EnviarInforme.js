@@ -6,14 +6,24 @@ import { Control, LocalForm, Errors } from "react-redux-form";
 
 const required = (val) => val && val.length;
 class EnviarInforme extends React.Component {
+
   constructor(props) {
     super(props);
+
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleSubmit(values) {
+    this.props.enviarInforme({
+      correo: values.correo,
+      contenidoContido: values.contenidoCorreo,
+    });
   }
   render() {
     return (
+      
       <div className="container-md">
-        <LocalForm>
+        <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
           <div className="container">
             <h1 className="centrado"> Enviar Informe </h1>
             <div class="contenedor-formulario row col-12">
@@ -40,7 +50,7 @@ class EnviarInforme extends React.Component {
                   />
                   <Errors
                     className="text-danger"
-                    model=".username"
+                    model=".correo"
                     show="touched"
                     messages={{ required: "El campo correo es requerido" }}
                   />{" "}
@@ -52,6 +62,7 @@ class EnviarInforme extends React.Component {
                   <Input
                     type="textarea"
                     id="contenidoCorreo"
+                    model=".contenidoCorreo"
                     name="contenidoCorreo"
                     placeholder="Contenido del correo"
                     className="form-control col-7"
