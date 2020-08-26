@@ -1,53 +1,114 @@
-import React, { Component } from "react";
+import React from "react";
 import logoAudt from "../images/logo-auditoria.jpg";
-import logoPlus from "../images/logo-agregar.jpg";
+import { Loading } from './LoadingComponent';
+import { Card, CardBody, CardHeader, CardTitle, CardText, Button } from 'reactstrap';
+import { Link } from 'react-router-dom';
+import CrearAuditoria from './CrearAuditoria';
+import EditarAuditoria from "./EditarAuditoriaComponent";
 
-class MisAuditorias extends React.Component {
-  render() {
+function RenderAuditorias({ auditoria, eliminarAuditoria, actualizarAuditoria }) {
+
+  const clientes = auditoria.nombre_clientes.map((cliente) => {
     return (
-      <div className="container-md">
-        <form>
-          <div className="container">
-            <h1> Mis Auditorias</h1>
-            <div className="contenedor-formulario row col-12">
-              <div className="col-5">
-                <img
-                  src={logoAudt}
-                  alt="logo Auditoria"
-                  width="400"
-                  height="400"
-                />
-              </div>
-              <div className="formulario col-7">
-                <div className="card  tarjeta-auditoria w-50">
-                  <div className="card-body">
-                    <h5 className="card-title">Auditoria 1</h5>
-                    <p className="card-text">Informacion Sobre auditoria</p>
-                    <a href="#" class="btn btn-info">
-                      Ingresar
-                    </a>
-                  </div>
-                </div>
-                <div class="card  tarjeta-auditoria w-50">
-                  <div class="card-body">
-                    <h5 class="card-title">Auditoria 2</h5>
-                    <p class="card-text">Informacion Sobre auditoria</p>
-                    <a href="#" class="btn btn-info">
-                      Ingresar
-                    </a>
-                  </div>
-                </div>
-                <div>
-                  <button class="btn btn-light centrado">
-                    <img src={logoPlus} alt="+" width="35" height="35" />
-                  </button>
-                </div>
-              </div>
-            </div>
+      <div key={cliente._id}>
+        <CardText>{cliente.nombre} {cliente.apellido}</CardText>
+      </div>
+    );
+  })
+
+  return (
+    <Card className="tarjeta-auditoria w-50 ">
+      <CardHeader className="text-white bg-info">
+        <div className="row">
+          <h5 className="col-8">{auditoria.nombre}</h5>
+          <EditarAuditoria className="col-2" auditoria={auditoria} actualizarAuditoria={actualizarAuditoria}/>
+          <Button className="col-2" color="info" onClick={() => { if (window.confirm('¿Estás seguro de eliminar esta auditoría?')) { eliminarAuditoria(auditoria._id) }; }}>
+            <span className="fa fa-trash fa-lg"></span>
+          </Button>
+        </div>
+      </CardHeader>
+      <CardBody>
+        <div className="row row-cols-2">
+          <CardTitle className="col-6"><h6>Lider Auditor:</h6></CardTitle>
+          <CardText className="col-6"> {auditoria.lider_auditor.nombre} {auditoria.lider_auditor.apellido}</CardText>
+        </div>
+        <div className="row row-cols-2">
+          <CardTitle className="col-6"><h6>Clientes:</h6></CardTitle>
+          <div className="col-6">
+            {clientes}
           </div>
-        </form>
+        </div>
+        <div className="row mt-4">
+          <Link to={`/misAuditorias/${auditoria._id}`} className="mx-auto col-10 btn btn-info">Ingresar</Link>
+        </div>
+      </CardBody>
+
+    </Card>
+  );
+}
+
+function RenderState({ auditorias, isLoading, errMess, eliminarAuditoria, actualizarAuditoria }) {
+  if (isLoading) {
+    return (
+      <Loading />
+    );
+  }
+  else if (errMess) {
+    return (
+      <h4>{errMess}</h4>
+    );
+  }
+  else if (auditorias != null) {
+    const mis_auditorias = auditorias.map((auditoria) => {
+      return (
+        <div key={auditoria._id}>
+          <RenderAuditorias
+            auditoria={auditoria}
+            eliminarAuditoria={eliminarAuditoria}
+            actualizarAuditoria={actualizarAuditoria}
+          />
+        </div>
+      );
+    })
+    return (
+      <div>
+        {mis_auditorias}
       </div>
     );
   }
+}
+
+const MisAuditorias = (props) => {
+  return (
+    <div className="container-md">
+      <form>
+        <div className="container">
+          <h1 className="text-center"> Mis Auditorias</h1>
+          <div className="contenedor-formulario row col-12">
+            <div className="col-12 col-md-5">
+              <img
+                src={logoAudt}
+                alt="logo Auditoria"
+                width="400"
+                height="400"
+              />
+            </div>
+            <div className="formulario col-12 col-md-7">
+              <RenderState
+                auditorias={props.auditorias.auditorias}
+                isLoading={props.auditorias.isLoading}
+                errMess={props.auditorias.errMess}
+                eliminarAuditoria={props.eliminarAuditoria}
+                actualizarAuditoria={props.actualizarAuditoria}
+              />
+              <div className="offset-2">
+                <CrearAuditoria postAuditoria={props.postAuditoria} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
 }
 export default MisAuditorias;

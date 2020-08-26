@@ -2,16 +2,15 @@ import React, { Component } from 'react';
 import NavInforme from './NavInformeComponent';
 import EditarInforme from './EditarInforme';
 import Login from './Login';
-import { loginUser, logoutUser, fetchAuditorias, loginUserGoogle } from '../redux/ActionCreators';
+import { loginUser, logoutUser, fetchAuditorias, loginUserGoogle, postAuditoria, eliminarAuditoria, actualizarAuditoria } from '../redux/ActionCreators';
 import MisAuditorias from './MisAuditorias';
 import EnviarInforme from "./EnviarInforme";
-import CrearAuditoria from "./CrearAuditoria";
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 const mapStateToProps = state => {
     return {
-        items: state.items,
+        auditorias: state.auditorias,
         auth: state.auth
     }
 }
@@ -21,9 +20,16 @@ const mapDispatchToProps = dispatch => ({
     logoutUser: () => dispatch(logoutUser()),
     fetchAuditorias: () => dispatch(fetchAuditorias()),
     loginUserGoogle: () => dispatch(loginUserGoogle()),
+    postAuditoria: (auditoria) => dispatch(postAuditoria(auditoria)),
+    eliminarAuditoria: (auditoriaId) => dispatch(eliminarAuditoria(auditoriaId)),
+    actualizarAuditoria: (auditoriaId, auditoria) => dispatch(actualizarAuditoria(auditoriaId, auditoria))
 });
 
 class Main extends Component {
+
+    componentDidMount() {
+        this.props.fetchAuditorias();
+    }
 
     render() {
 
@@ -48,12 +54,11 @@ class Main extends Component {
             <div>
 
                 <Switch>
-                    <Route path="/login" component={() => <Login loginUser={this.props.loginUser} auth={this.props.auth} />} />
-                    <Route path="/misAuditorias"  component={() =><MisAuditorias/> }/>
-                    <Route path="/crearAuditoria"  component={() =><CrearAuditoria/> }/>
-                    <Route path="/enviarInforme"  component={() =><EnviarInforme/> }/>
+                    <Route path="/login" component={() => <Login loginUser={this.props.loginUser} auth={this.props.auth} fetchAuditorias={this.props.fetchAuditorias} />} />
+                    <PrivateRoute exact path="/misAuditorias" component={() => <MisAuditorias auditorias={this.props.auditorias} postAuditoria={this.props.postAuditoria} eliminarAuditoria={this.props.eliminarAuditoria} actualizarAuditoria={this.props.actualizarAuditoria}/>} />
+                    <Route path="/enviarInforme" component={() => <EnviarInforme />} />
                     <PrivateRoute path="/item/:itemId" component={ItemWithId} />
-                    <Redirect to="/login" />
+                    {this.props.auth.isAuthenticated ? <Redirect to="/misAuditorias" /> : <Redirect to="/login" />}
                 </Switch>
             </div>
         );

@@ -126,6 +126,94 @@ export const fetchAuditorias = () => (dispatch) => {
         .catch(error => dispatch(auditoriasFailed(error.message)));
 }
 
+export const postAuditoria = (auditoria) => (dispatch) => {
+
+    const bearer = 'Bearer ' + localStorage.getItem('token');
+
+    return fetch(baseUrl + 'auditorias', {
+        method: "POST",
+        body: JSON.stringify(auditoria),
+        headers: {
+            "Content-Type": "application/json",
+            'Authorization': bearer
+        },
+        credentials: "same-origin"
+    })
+        .then(response => {
+            if (response.ok) {
+                return response;
+            } else {
+                var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                error.response = response;
+                throw error;
+            }
+        },
+            error => {
+                throw error;
+            })
+        .then(response => response.json())
+        .then(auditoria => {dispatch(addAuditoria(auditoria)); })
+        .catch(error => alert('La auditoría no pudo ser creada\nError: ' + error.message))
+}
+
+export const eliminarAuditoria = (auditoriaId) => (dispatch) => {
+
+    const bearer = 'Bearer ' + localStorage.getItem('token');
+
+    return fetch(baseUrl + 'auditorias/' + auditoriaId, {
+        method: "DELETE",
+        headers: {
+            'Authorization': bearer
+        },
+        credentials: "same-origin"
+    })
+        .then(response => {
+            if (response.ok) {
+                return response;
+            } else {
+                var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                error.response = response;
+                throw error;
+            }
+        },
+            error => {
+                throw error;
+            })
+        .then(response => response.json())
+        .then(auditoria => dispatch(deleteAuditoria(auditoria)))
+        .catch(error => alert('La auditoría no pudo ser eliminar\nError: ' + error.message));
+};
+
+export const actualizarAuditoria = (auditoriaId, auditoria) => (dispatch) => {
+
+    const bearer = 'Bearer ' + localStorage.getItem('token');
+
+    return fetch(baseUrl + 'auditorias/' + auditoriaId, {
+        method: "PUT",
+        body: JSON.stringify(auditoria),
+        headers: {
+            "Content-Type": "application/json",
+            'Authorization': bearer
+        },
+        credentials: "same-origin"
+    })
+        .then(response => {
+            if (response.ok) {
+                return response;
+            } else {
+                var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                error.response = response;
+                throw error;
+            }
+        },
+            error => {
+                throw error;
+            })
+        .then(response => response.json())
+        .then(auditoria => dispatch(updateAuditoria(auditoria)))
+        .catch(error => alert('La auditoría no pudo ser actualizada\nError: ' + error.message));
+};
+
 export const auditoriasLoading = () => ({
     type: ActionTypes.AUDITORIAS_LOADING
 });
@@ -139,3 +227,18 @@ export const consultarAuditorias = (auditorias) => ({
     type: ActionTypes.CONSULTAR_AUDITORIAS,
     payload: auditorias
 });
+
+export const addAuditoria = (auditoria) => ({
+    type: ActionTypes.ADD_AUDITORIA,
+    payload: auditoria
+});
+
+export const deleteAuditoria = (auditoria) => ({
+    type: ActionTypes.DELETE_AUDITORIA,
+    payload: auditoria
+});
+
+export const updateAuditoria = (auditoria) => ({
+    type: ActionTypes.UPDATE_AUDITORIA,
+    payload: auditoria
+})
