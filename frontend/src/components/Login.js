@@ -29,6 +29,13 @@ class Login extends Component {
 			);
 		}
 		return (
+		<div class="fondo">
+		<div class="imagen">
+			<div class="contenedor">	
+			<div class="card text-center">
+				<div class="card-header">
+				</div>
+				<div></div>
 			<LocalForm className="login-form" model="login" onSubmit={(values) => this.handleSubmit(values)}>
 				<Row className="form-group">
 					<Label htmlFor="username">Usuario</Label>
@@ -52,6 +59,10 @@ class Login extends Component {
 					/>
 				</div>
 			</ LocalForm>
+			</div>
+			</div>
+			</div>
+			</div>
 		);
 	}
 

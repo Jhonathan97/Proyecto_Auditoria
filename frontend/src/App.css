@@ -20,3 +20,34 @@
   margin-left: 10%;
 }
 
+.register-form{
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+  height: 100%;
+}
+.contenedor{
+  margin-right: 43%;
+  margin-top: 3.2%;
+}
+.card{
+  width: 30rem;
+  margin-left: 100%;
+  image-resolution: 100%;
+}
+.imagen{
+  background-image: url(images/tool-shot.png);
+  background-repeat: no-repeat;
+}
+
+.fondo{
+  background-color: #5e4457;
+}
+.cancelar{
+  margin-left: 10%;
+  display: inline-block;
+}
+
+
+
