@@ -6,7 +6,6 @@ import { loginUser, logoutUser, fetchAuditorias, loginUserGoogle } from '../redu
 import MisAuditorias from './MisAuditorias';
 import EnviarInforme from "./EnviarInforme";
 import CrearAuditoria from "./CrearAuditoria";
-import { loginUser, logoutUser, fetchAuditorias } from '../redux/ActionCreators';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
