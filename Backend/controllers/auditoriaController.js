@@ -14,6 +14,7 @@ const { populate } = require('../models/auditorias');
  */
 exports.getAuditorias = (req, res, next) => {
     Auditorias.find({ $or: [{ lider_auditor: req.user._id }, { miembros_equipo: { _id: req.user._id } }] })
+        .populate('lider_auditor', 'nombre apellido')
         .then((auditorias) => {
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
@@ -36,9 +37,13 @@ exports.crearAuditoria = (req, res, next) => {
     req.body.lider_auditor = req.user._id;
     Auditorias.create(req.body)
         .then((auditoria) => {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(auditoria);
+            Auditorias.findById(auditoria._id)
+                .populate('lider_auditor', 'nombre apellido')
+                .then((auditoria) => {
+                    res.statusCode = 200;
+                    res.setHeader('Content-Type', 'application/json');
+                    res.json(auditoria);
+                }, (err) => next(err))
         }, (err) => next(err))
         .catch((err) => next(err));
 };
@@ -93,6 +98,7 @@ exports.editarAuditoria = (req, res, next) => {
         { $set: req.body },
         { new: true }
     )
+        .populate('lider_auditor', 'nombre apellido')
         .then((auditoria) => {
             if (auditoria != null) {
                 res.statusCode = 200;
@@ -120,6 +126,7 @@ exports.editarAuditoria = (req, res, next) => {
  */
 exports.eliminarAuditoria = (req, res, next) => {
     Auditorias.findOneAndRemove({ _id: req.params.auditoriaId, lider_auditor: req.user._id })
+        .populate('lider_auditor', 'nombre apellido')
         .then((resp) => {
             if (resp != null) {
                 res.statusCode = 200;

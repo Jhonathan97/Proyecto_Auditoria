@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import logoAudt from "../images/logo-auditoria.jpg";
-import logoPlus from "../images/logo-agregar.jpg";
 
-class EnviarInforme extends React.Component {
+class EnviarInforme extends Component {
   state = {
     correo: "",
     contenido: "",

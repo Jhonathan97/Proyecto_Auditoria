@@ -1,96 +1,103 @@
 import React, { Component } from "react";
 import logoAudt from "../images/logo-auditoria.jpg";
 import logoPlus from "../images/logo-agregar.jpg";
-class CrearAuditoria extends React.Component {
+import { Button, Modal, ModalHeader, ModalBody, Col, Row, Label } from 'reactstrap';
+import { Control, LocalForm, Errors } from 'react-redux-form';
+
+const required = (val) => val && val.length;
+
+class CrearAuditoria extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      values: [
-        { name: "One", id: 1 },
-        { name: "Two", id: 2 },
-        { name: "Three", id: 3 },
-        { name: "four", id: 4 },
-      ],
+      isModalOpen: false
     };
+    this.toggleModal = this.toggleModal.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  toggleModal() {
+    this.setState({
+      isModalOpen: !this.state.isModalOpen
+    });
+  }
+
+  handleSubmit(values) {
+    this.toggleModal();
+    this.props.postAuditoria({
+      nombre: values.nombre_auditoria,
+      nombre_clientes: [{
+        nombre: values.nombre_cliente,
+        apellido: values.apellido_cliente
+      }]
+    });
+  }
+
   render() {
-    let optionTemplate = this.state.values.map((v) => (
-      <option value={v.id}>{v.name}</option>
-    ));
     return (
-      <div class="container-md">
-        <form>
-          <div class="container">
-            <h1> Crear Auditoria </h1>
-            <div class="contenedor-formulario row col-12">
-              <div class="col-5">
+      <div>
+        <Button outline size="md" onClick={this.toggleModal} color="info">
+          <span className="fa fa-plus-circle fa-lg"></span> Crear Auditoría
+        </Button>
+        <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
+          <ModalHeader toggle={this.toggleModal}>Crear Auditoría</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col sm="12" md={{ size: 6, offset: 3 }}>
                 <img
                   src={logoAudt}
                   alt="logo Auditoria"
-                  width="400"
-                  height="400"
+                  width="200"
+                  height="200"
                 />
-              </div>
-              <div class="formulario col-7">
-                <div class="row campo ">
-                  <label class="col-4" for="exampleInputEmail">
-                    Nombre de la Auditoria
-                  </label>
-                  <input
-                    class="form-control col-7"
-                    id="nombre-auditoria"
-                    placeholder="Nombre de la Auditoria"
-                    required
-                  ></input>
-                </div>
-                <div class="row campo ">
-                  <label class="col-4" for="exampleInputEmail">
-                    Nombre del cliente
-                  </label>
-                  <input
-                    class="form-control col-7"
-                    id="nombre-cliente"
-                    placeholder="Nombre del cliente"
-                    required
-                  ></input>
-                </div>
-                <div class="row campo">
-                  <label class="col-4" for="validationTextarea ">
-                    Equipo Auditor
-                  </label>
-                  <select
-                    class=" form-control col-7"
-                    id="equipo-auditor"
-                    value={this.state.value}
-                    onChange={this.handleChange}
-                  >
-                    {optionTemplate}
-                  </select>
-                  <button class="btn btn-light">
-                    <img
-                      src={logoPlus}
-                      alt="+"
-                      width="35"
-                      height="35"
-                    />
-                  </button>
-                </div>
-                <div class="row centrado">
-                  <div class="col-2">
-                    <button class="btn btn-info" type="submit">
-                      Cancelar
-                    </button>
-                  </div>
-                  <div class="col-4">
-                    <button class="btn btn-info" type="reset">
-                      Crear Auditoria
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
+              </Col>
+            </Row>
+            <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
+              <Row className="form-group">
+                <Label htmlFor="nombre_auditoria" md={12}>Nombre de la Auditoria</Label>
+                <Col md={12}>
+                  <Control.text model=".nombre_auditoria" id="nombre_auditoria" placeholder="Nombre de la Auditoría" name="nombre_auditoria" className="form-control" validators={{ required }} />
+                  <Errors className="text-danger" model=".nombre_auditoria" show="touched" messages={{ required: 'El campo Nombre de la Auditoría es requerido' }} />
+                </Col>
+              </Row>
+              <Row className="form-group">
+                <Label htmlFor="nombre_clientes" md={12}>Nombre del cliente</Label>
+                <Col md={9}>
+                  <Control.text model=".nombre_cliente" id="nombre_cliente" placeholder="Nombre" name="nombre_cliente" className="form-control" validators={{ required }} />
+                  <Errors className="text-danger" model=".nombre_cliente" show="touched" messages={{ required: 'El campo Nombre del Cliente es requerido' }} />
+                </Col>
+                <Col md={9}>
+                  <Control.text model=".apellido_cliente" id="apellido_cliente" placeholder="Apellido" name="nombre_cliente" className="form-control" validators={{ required }} />
+                  <Errors className="text-danger" model=".apellido_cliente" show="touched" messages={{ required: 'El campo Apellido del Cliente es requerido' }} />
+                </Col>
+              </Row>
+              <Row className="form-group">
+                <Label htmlFor="equipo_auditor" md={12}>Equipo Auditor</Label>
+                <Col md={12}>
+                  <Control.select model=".miembros_equipo" name="miembros_equipo" className="form-control">
+                    <option>One</option>
+                    <option>Two</option>
+                    <option>Three</option>
+                    <option>Four</option>
+                  </Control.select>
+                </Col>
+                <button class="btn btn-light">
+                  <img
+                    src={logoPlus}
+                    alt="+"
+                    width="35"
+                    height="35"
+                  />
+                </button>
+              </Row>
+              <Row className="form-group">
+                <Col>
+                  <Button type="submit" color="info">Crear Auditoria</Button>
+                </Col>
+              </Row>
+            </LocalForm>
+          </ModalBody>
+        </Modal>
       </div>
     );
   }
