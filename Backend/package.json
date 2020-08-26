@@ -2,10 +2,14 @@
   "name": "backend",
   "version": "0.0.0",
   "private": true,
+  
   "scripts": {
-    "dev": "nodemon ./bin/www"
+    "dev": "nodemon ./bin/www",
+    "appClient": "cd client && npm start",
+    "ckeditor": "concurrently \" node service.js\"\"npm run appClient\""
   },
   "dependencies": {
+    "connect-multiparty": "^2.2.0",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "express": "~4.16.1",
