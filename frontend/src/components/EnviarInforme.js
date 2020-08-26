@@ -6,7 +6,6 @@ import { Control, LocalForm, Errors } from "react-redux-form";
 
 const required = (val) => val && val.length;
 class EnviarInforme extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -21,7 +20,6 @@ class EnviarInforme extends React.Component {
   }
   render() {
     return (
-      
       <div className="container-md">
         <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
           <div className="container">
@@ -40,33 +38,37 @@ class EnviarInforme extends React.Component {
                   <Label className="col-4" htmlFor="username">
                     Usuario
                   </Label>
-                  <Control.text
-                    model=".correo"
-                    id="correo"
-                    name="correo"
-                    placeholder="ejemplo@gmail.com"
-                    className="form-control col-7"
-                    validators={{ required }}
-                  />
-                  <Errors
-                    className="text-danger"
-                    model=".correo"
-                    show="touched"
-                    messages={{ required: "El campo correo es requerido" }}
-                  />{" "}
+                  <Row className="col-8">
+                    <Control.text
+                      model=".correo"
+                      id="correo"
+                      name="correo"
+                      placeholder="ejemplo@gmail.com"
+                      className="form-control col-12"
+                      validators={{ required }}
+                    />
+                    <Errors
+                      className="text-danger col-12"
+                      model=".correo"
+                      show="touched"
+                      messages={{ required: "El campo correo es requerido" }}
+                    />{" "}
+                  </Row>
                 </Row>
                 <Row className="row campo ">
                   <Label className="col-4" htmlFor="contenidoCorreo">
                     Contenido Correo
                   </Label>
-                  <Input
-                    type="textarea"
-                    id="contenidoCorreo"
-                    model=".contenidoCorreo"
-                    name="contenidoCorreo"
-                    placeholder="Contenido del correo"
-                    className="form-control col-7"
-                  />
+                  <Row className="col-8">
+                    <Input
+                      type="textarea"
+                      id="contenidoCorreo"
+                      model=".contenidoCorreo"
+                      name="contenidoCorreo"
+                      placeholder="Contenido del correo"
+                      className="form-control col-12"
+                    />
+                  </Row>
                 </Row>
                 <div class="row centrado">
                   <div class="col-2">
