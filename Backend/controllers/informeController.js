@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-const Informes = require('../models/informes');
-const Auditorias = require('../models/auditorias');
-const { populate } = require('../models/auditorias');
-const ITEMS = require('../shared/items');
+const mongoose = require("mongoose");
+const Informes = require("../models/informes");
+const Auditorias = require("../models/auditorias");
+const { populate } = require("../models/auditorias");
+const ITEMS = require("../shared/items");
 
 /**
  * Función que permite obtener el informe de un auditoría especifica
@@ -12,39 +12,54 @@ const ITEMS = require('../shared/items');
  * permite ser realizada si es un lider_auditor o si pertenece a los miembros del equipo de la auditoría.
  * @param {*} next si ocurre un error, este parametro me permite enviarlo al manejador de errores de la app express
  * para que el error pueda ser visualizado, en caso de que no se encuentre la auditoría, no este asociada o la auditoría
- * no cuente con un informe, respondera con un statusCode: 404 y un mensaje indicando esto. 
+ * no cuente con un informe, respondera con un statusCode: 404 y un mensaje indicando esto.
  */
 exports.getInforme = (req, res, next) => {
-    Auditorias.findOne({
-        _id: req.params.auditoriaId,
-        $or: [
-            { lider_auditor: req.user._id },
-            { miembros_equipo: { _id: req.user._id } }
-        ]
-    })
-        .then((auditoria) => {
-            if (auditoria != null) {
-                Informes.findOne({ auditoria: req.params.auditoriaId })
-                    .then((informe) => {
-                        if (informe != null) {
-                            res.statusCode = 200;
-                            res.setHeader('Content-Type', 'application/json');
-                            res.json(informe);
-                        }
-                        else {
-                            err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' no contiene un informe!');
-                            err.status = 404;
-                            return next(err);
-                        }
-                    }, (err) => next(err));
-            }
-            else {
-                err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' no existe o no pertenece a sus auditorías!');
-                err.status = 404;
-                return next(err);
-            }
-        }, (err) => next(err))
-        .catch((err) => next(err));
+  Auditorias.findOne({
+    _id: req.params.auditoriaId,
+    $or: [
+      { lider_auditor: req.user._id },
+      { miembros_equipo: { _id: req.user._id } },
+    ],
+  })
+    .then(
+      (auditoria) => {
+        if (auditoria != null) {
+          Informes.findOne({ auditoria: req.params.auditoriaId }).then(
+            (informe) => {
+              if (informe != null) {
+                res.statusCode = 200;
+                res.setHeader("Content-Type", "application/json");
+                res.json({ success: true, informe: informe });
+              } else {
+                res.statusCode = 404;
+                res.setHeader("Content-Type", "application/json");
+                res.json({
+                  success: false,
+                  status:
+                    "La auditoría con el ID: " +
+                    req.params.auditoriaId +
+                    " no contiene un informe!",
+                });
+              }
+            },
+            (err) => next(err)
+          );
+        } else {
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status:
+              "La auditoría con el ID: " +
+              req.params.auditoriaId +
+              " no existe o no pertenece a sus auditorías!",
+          });
+        }
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
 };
 
 /**
@@ -59,41 +74,63 @@ exports.getInforme = (req, res, next) => {
  * auditoría, o la auditoría ya tenga un informe creado respondera con un statusCode: 404 y un mensaje indicando esto.
  */
 exports.crearInforme = (req, res, next) => {
-    Auditorias.findOne({ _id: req.params.auditoriaId, lider_auditor: req.user._id })
-        .then((auditoria) => {
-            if (auditoria != null) {
-                Informes.findOne({ auditoria: req.params.auditoriaId })
-                    .then((informe) => {
-                        if (informe == null) {
-                            req.body.items = ITEMS;
-                            req.body.auditoria = req.params.auditoriaId;
-                            Informes.create(req.body)
-                                .then((informe) => {
-                                    informe.items.map((item) => {
-                                        item.autor = auditoria.lider_auditor;
-                                    });
-                                    informe.save()
-                                        .then((informe) => {
-                                            res.statusCode = 200;
-                                            res.setHeader('Content-Type', 'application/json');
-                                            res.json(informe);
-                                        }, (err) => next(err));
-                                }, (err) => next(err));
-                        }
-                        else {
-                            err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' ya cuenta con un informe!');
-                            err.status = 404;
-                            return next(err);
-                        }
-                    }, (err) => next(err));
-            }
-            else {
-                err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' no existe o no eres lider auditor de esta auditoría!');
-                err.status = 404;
-                return next(err);
-            }
-        }, (err) => next(err))
-        .catch((err) => next(err));
+  Auditorias.findOne({
+    _id: req.params.auditoriaId,
+    lider_auditor: req.user._id,
+  })
+    .then(
+      (auditoria) => {
+        if (auditoria != null) {
+          Informes.findOne({ auditoria: req.params.auditoriaId }).then(
+            (informe) => {
+              if (informe == null) {
+                req.body.items = ITEMS;
+                req.body.auditoria = req.params.auditoriaId;
+                Informes.create(req.body).then(
+                  (informe) => {
+                    informe.items.map((item) => {
+                      item.autor = auditoria.lider_auditor;
+                    });
+                    informe.save().then(
+                      (informe) => {
+                        res.statusCode = 201;
+                        res.setHeader("Content-Type", "application/json");
+                        res.json({ success: true, informe: informe });
+                      },
+                      (err) => next(err)
+                    );
+                  },
+                  (err) => next(err)
+                );
+              } else {
+                res.statusCode = 412;
+                res.setHeader("Content-Type", "application/json");
+                res.json({
+                  success: false,
+                  status:
+                    "La auditoría con el ID: " +
+                    req.params.auditoriaId +
+                    " ya cuenta con un informe!",
+                });
+              }
+            },
+            (err) => next(err)
+          );
+        } else {
+          res.statusCode = 412;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status:
+              "La auditoría con el ID: " +
+              req.params.auditoriaId +
+              " no existe o no eres lider auditor de esta auditoría!",
+          });
+        }
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
 };
 
 /**
@@ -107,30 +144,48 @@ exports.crearInforme = (req, res, next) => {
  * auditoría respondera con un statusCode: 404 y un mensaje indicando esto.
  */
 exports.eliminarInforme = (req, res, next) => {
-    Auditorias.findOne({ _id: req.params.auditoriaId, lider_auditor: req.user._id })
-        .then((auditoria) => {
-            if (auditoria != null) {
-                Informes.findOneAndDelete({ auditoria: req.params.auditoriaId })
-                    .then((resp) => {
-                        if (resp != null) {
-                            res.statusCode = 200;
-                            res.setHeader('Content-Type', 'application/json');
-                            res.json(resp);
-                        }
-                        else {
-                            err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' no contiene un informe!');
-                            err.status = 404;
-                            return next(err);
-                        }
-                    }, (err) => next(err));
-            }
-            else {
-                err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' no existe o no eres lider auditor de esta auditoría!');
-                err.status = 404;
-                return next(err);
-            }
-        }, (err) => next(err))
-        .catch((err) => next(err));
+  Auditorias.findOne({
+    _id: req.params.auditoriaId,
+    lider_auditor: req.user._id,
+  })
+    .then(
+      (auditoria) => {
+        if (auditoria != null) {
+          Informes.findOneAndDelete({ auditoria: req.params.auditoriaId }).then(
+            (resp) => {
+              if (resp != null) {
+                res.statusCode = 200;
+                res.setHeader("Content-Type", "application/json");
+                res.json({ success: true });
+              } else {
+                res.statusCode = 404;
+                res.setHeader("Content-Type", "application/json");
+                res.json({
+                  success: false,
+                  status:
+                    "La auditoría con el ID: " +
+                    req.params.auditoriaId +
+                    " no contiene un informe!",
+                });
+              }
+            },
+            (err) => next(err)
+          );
+        } else {
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status:
+              "La auditoría con el ID: " +
+              req.params.auditoriaId +
+              " no existe o no eres lider auditor de esta auditoría!",
+          });
+        }
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
 };
 
 /**
@@ -143,44 +198,61 @@ exports.eliminarInforme = (req, res, next) => {
  * un lider_auditor o si pertenece a los miembros del equipo de la auditoría.
  * @param {*} next si ocurre un error, este parametro me permite enviarlo al manejador de errores de la app express
  * para que el error pueda ser visualizado, en caso de que no se encuentre la auditoría, no este asociada, o la auditoría
- * no cuente con un informe, respondera con un statusCode: 404 y un mensaje indicando esto. 
+ * no cuente con un informe, respondera con un statusCode: 404 y un mensaje indicando esto.
  */
 exports.agregarItem = (req, res, next) => {
-    Auditorias.findOne({
-        _id: req.params.auditoriaId,
-        $or: [
-            { lider_auditor: req.user._id },
-            { miembros_equipo: { _id: req.user._id } }
-        ]
-    })
-        .then((auditoria) => {
-            if (auditoria != null) {
-                Informes.findOne({ auditoria: req.params.auditoriaId })
-                    .then((informe) => {
-                        if (informe != null) {
-                            req.body.autor = req.user._id;
-                            informe.items.push(req.body);
-                            informe.save()
-                                .then((informe) => {
-                                    res.statusCode = 200;
-                                    res.setHeader('Content-Type', 'application/json');
-                                    res.json(informe);
-                                }, (err) => next(err));
-                        }
-                        else {
-                            err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' no contiene un informe!');
-                            err.status = 404;
-                            return next(err);
-                        }
-                    }, (err) => next(err));
-            }
-            else {
-                err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' no existe o no pertenece a sus auditorías!');
-                err.status = 404;
-                return next(err);
-            }
-        }, (err) => next(err))
-        .catch((err) => next(err));
+  Auditorias.findOne({
+    _id: req.params.auditoriaId,
+    $or: [
+      { lider_auditor: req.user._id },
+      { miembros_equipo: { _id: req.user._id } },
+    ],
+  })
+    .then(
+      (auditoria) => {
+        if (auditoria != null) {
+          Informes.findOne({ auditoria: req.params.auditoriaId }).then(
+            (informe) => {
+              if (informe != null) {
+                req.body.autor = req.user._id;
+                informe.items.push(req.body);
+                informe.save().then(
+                  (informe) => {
+                    res.statusCode = 201;
+                    res.setHeader("Content-Type", "application/json");
+                    res.json({ success: true, informe: informe });
+                  },
+                  (err) => next(err)
+                );
+              } else {
+                res.statusCode = 412;
+                res.setHeader("Content-Type", "application/json");
+                res.json({
+                  success: false,
+                  status:
+                    "La auditoría con el ID: " +
+                    req.params.auditoriaId +
+                    " no contiene un informe!",
+                });
+              }
+            },
+            (err) => next(err)
+          );
+        } else {
+          res.statusCode = 412;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status:
+              "La auditoría con el ID: " +
+              req.params.auditoriaId +
+              " no existe o no eres lider auditor de esta auditoría!",
+          });
+        }
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
 };
 
 /**
@@ -194,54 +266,72 @@ exports.agregarItem = (req, res, next) => {
  * @param {*} next si ocurre un error, este parametro me permite enviarlo al manejador de errores de la app express
  * para que el error pueda ser visualizado, en caso de que no se encuentre la auditoría, no este asociada,o la auditoría
  * no cuente con un informe, o item que se desea editar no existe, respondera con un statusCode: 404 y un mensaje
- * indicando esto. 
+ * indicando esto.
  */
 exports.editarItem = (req, res, next) => {
-    Auditorias.findOne({
-        _id: req.params.auditoriaId,
-        $or: [
-            { lider_auditor: req.user._id },
-            { miembros_equipo: { _id: req.user._id } }
-        ]
-    })
-        .then((auditoria) => {
-            if (auditoria != null) {
-                Informes.findOne({ auditoria: req.params.auditoriaId })
-                    .then((informe) => {
-                        if (informe != null) {
-                            if (informe.items.id(req.params.itemId) != null) {
-                                if (req.body.nombre)
-                                    informe.items.id(req.params.itemId).nombre = req.body.nombre;
-                                if (req.body.contenido)
-                                    informe.items.id(req.params.itemId).contenido = req.body.contenido;
-                                req.body.autor = req.user._id;
-                                informe.save()
-                                    .then((informe) => {
-                                        res.statusCode = 200;
-                                        res.setHeader('Content-Type', 'application/json');
-                                        res.json(informe);
-                                    }, (err) => next(err));
-                            }
-                            else {
-                                err = new Error('El Item con el ID: ' + req.params.itemId + ' no se encontro!');
-                                err.status = 404;
-                                return next(err);
-                            }
-                        }
-                        else {
-                            err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' no contiene un informe!');
-                            err.status = 404;
-                            return next(err);
-                        }
-                    }, (err) => next(err));
-            }
-            else {
-                err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' no existe o no pertenece a sus auditorías!');
+  Auditorias.findOne({
+    _id: req.params.auditoriaId,
+    $or: [
+      { lider_auditor: req.user._id },
+      { miembros_equipo: { _id: req.user._id } },
+    ],
+  })
+    .then(
+      (auditoria) => {
+        if (auditoria != null) {
+          Informes.findOne({ auditoria: req.params.auditoriaId }).then(
+            (informe) => {
+              if (informe != null) {
+                if (informe.items.id(req.params.itemId) != null) {
+                  if (req.body.nombre)
+                    informe.items.id(req.params.itemId).nombre =
+                      req.body.nombre;
+                  if (req.body.contenido)
+                    informe.items.id(req.params.itemId).contenido =
+                      req.body.contenido;
+                  req.body.autor = req.user._id;
+                  informe.save().then(
+                    (informe) => {
+                      res.statusCode = 200;
+                      res.setHeader("Content-Type", "application/json");
+                      res.json(informe);
+                    },
+                    (err) => next(err)
+                  );
+                } else {
+                  err = new Error(
+                    "El Item con el ID: " +
+                      req.params.itemId +
+                      " no se encontro!"
+                  );
+                  err.status = 404;
+                  return next(err);
+                }
+              } else {
+                err = new Error(
+                  "La auditoría con el ID: " +
+                    req.params.auditoriaId +
+                    " no contiene un informe!"
+                );
                 err.status = 404;
                 return next(err);
-            }
-        }, (err) => next(err))
-        .catch((err) => next(err));
+              }
+            },
+            (err) => next(err)
+          );
+        } else {
+          err = new Error(
+            "La auditoría con el ID: " +
+              req.params.auditoriaId +
+              " no existe o no pertenece a sus auditorías!"
+          );
+          err.status = 404;
+          return next(err);
+        }
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
 };
 
 /**
@@ -253,48 +343,64 @@ exports.editarItem = (req, res, next) => {
  * @param {*} next si ocurre un error, este parametro me permite enviarlo al manejador de errores de la app express
  * para que el error pueda ser visualizado, en caso de que no se encuentre la auditoría, no este asociada,o la auditoría
  * no cuente con un informe, o item que se desea eliminar no existe, respondera con un statusCode: 404 y un mensaje
- * indicando esto. 
+ * indicando esto.
  */
 exports.eliminarItem = (req, res, next) => {
-    Auditorias.findOne({
-        _id: req.params.auditoriaId,
-        $or: [
-            { lider_auditor: req.user._id },
-            { miembros_equipo: { _id: req.user._id } }
-        ]
-    })
-        .then((auditoria) => {
-            if (auditoria != null) {
-                Informes.findOne({ auditoria: req.params.auditoriaId })
-                    .then((informe) => {
-                        if (informe != null) {
-                            if (informe.items.id(req.params.itemId) != null) {
-                                informe.items.pull(req.params.itemId);
-                                informe.save()
-                                    .then((informe) => {
-                                        res.statusCode = 200;
-                                        res.setHeader('Content-Type', 'application/json');
-                                        res.json(informe);
-                                    }, (err) => next(err));
-                            }
-                            else {
-                                err = new Error('El Item con el ID: ' + req.params.itemId + ' no se encontro!');
-                                err.status = 404;
-                                return next(err);
-                            }
-                        }
-                        else {
-                            err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' no contiene un informe!');
-                            err.status = 404;
-                            return next(err);
-                        }
-                    }, (err) => next(err));
-            }
-            else {
-                err = new Error('La auditoría con el ID: ' + req.params.auditoriaId + ' no existe o no pertenece a sus auditorías!');
+  Auditorias.findOne({
+    _id: req.params.auditoriaId,
+    $or: [
+      { lider_auditor: req.user._id },
+      { miembros_equipo: { _id: req.user._id } },
+    ],
+  })
+    .then(
+      (auditoria) => {
+        if (auditoria != null) {
+          Informes.findOne({ auditoria: req.params.auditoriaId }).then(
+            (informe) => {
+              if (informe != null) {
+                if (informe.items.id(req.params.itemId) != null) {
+                  informe.items.pull(req.params.itemId);
+                  informe.save().then(
+                    (informe) => {
+                      res.statusCode = 200;
+                      res.setHeader("Content-Type", "application/json");
+                      res.json(informe);
+                    },
+                    (err) => next(err)
+                  );
+                } else {
+                  err = new Error(
+                    "El Item con el ID: " +
+                      req.params.itemId +
+                      " no se encontro!"
+                  );
+                  err.status = 404;
+                  return next(err);
+                }
+              } else {
+                err = new Error(
+                  "La auditoría con el ID: " +
+                    req.params.auditoriaId +
+                    " no contiene un informe!"
+                );
                 err.status = 404;
                 return next(err);
-            }
-        }, (err) => next(err))
-        .catch((err) => next(err));
+              }
+            },
+            (err) => next(err)
+          );
+        } else {
+          err = new Error(
+            "La auditoría con el ID: " +
+              req.params.auditoriaId +
+              " no existe o no pertenece a sus auditorías!"
+          );
+          err.status = 404;
+          return next(err);
+        }
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
 };

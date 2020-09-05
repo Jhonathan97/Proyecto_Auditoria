@@ -1,5 +1,5 @@
 .navbar-dark {
-  background-color: #512da8;
+  background-color: #17a2b8;
   width: 250px;
   float: left;
   padding-bottom: 100%;
@@ -50,11 +50,11 @@
   margin-right: 43%;
   margin-top: 3.2%;
 }
-.card{
+/*.card{
   width: 30rem;
   margin-left: 100%;
   image-resolution: 100%;
-}
+}*/
 .imagen{
   background-image: url(images/tool-shot.png);
   background-repeat: no-repeat;
@@ -66,6 +66,12 @@
 .cancelar{
   margin-left: 10%;
   display: inline-block;
+}
+
+.row-content {
+  margin: 0px auto;
+  padding: 50px 0px 50px 0px;
+  min-height: 695px;
 }
 
 

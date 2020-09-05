@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import logoAudt from "../images/logo-auditoria.jpg";
-import { Button, Label, Input, Col, Row } from "reactstrap";
-import logoPlus from "../images/logo-agregar.jpg";
+import { Button, Label, Input, Row } from "reactstrap";
 import { Control, LocalForm, Errors } from "react-redux-form";
 
 const required = (val) => val && val.length;
-class EnviarInforme extends React.Component {
+class EnviarInforme extends Component {
   constructor(props) {
     super(props);
 
