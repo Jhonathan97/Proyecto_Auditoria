@@ -65,6 +65,27 @@ export const loginUser = (creds) => (dispatch) => {
     .catch((error) => dispatch(loginError(error.message)));
 };
 
+//  metodo para hacer envio de datos al servidor utilizando redux
+export const sendReport = (dataClient) => (dispatch) => {
+  const bearer = "Bearer " + localStorage.getItem("token");
+  return fetch(baseUrl + "informes/auditoria/sendReport", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": bearer
+    },
+    body: JSON.stringify(dataClient),
+    credentials: "same-origin"
+  }).catch((error) => dispatch(sendReportError(error.message)));
+};
+
+export const sendReportError = (message) => {
+  return {
+    type: ActionTypes.USER_REGISTER_FAILED,
+    message,
+  };
+};
+
 export const registerUser = (usuario) => (dispatch) => {
   return fetch(baseUrl + "users/signup", {
     method: "POST",

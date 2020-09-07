@@ -12,9 +12,9 @@ class EnviarInforme extends Component {
   }
 
   handleSubmit(values) {
-    this.props.enviarInforme({
+    this.props.sendReport({
       correo: values.correo,
-      contenidoContido: values.contenidoCorreo,
+      contenidoCorreo: values.contenidoCorreo,
     });
   }
   render() {
@@ -34,8 +34,8 @@ class EnviarInforme extends Component {
               </div>
               <div class="formulario col-7">
                 <Row className="row campo">
-                  <Label className="col-4" htmlFor="username">
-                    Usuario
+                  <Label className="col-4" htmlFor="correo">
+                    Correo
                   </Label>
                   <Row className="col-8">
                     <Control.text

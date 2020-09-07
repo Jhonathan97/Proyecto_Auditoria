@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var logger = require('morgan');
 var passport = require('passport');
-var config = require('./config')
+var config = require('./config');
 
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/userRouter');

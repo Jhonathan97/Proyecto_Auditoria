@@ -13,6 +13,7 @@ import {
   fetchInforme,
   postInforme,
   eliminarInforme,
+  sendReport,
   postItem,
 } from "../redux/ActionCreators";
 import MisAuditorias from "./MisAuditorias";
@@ -43,6 +44,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(actualizarAuditoria(auditoriaId, auditoria)),
   registerUser: (usuario) => dispatch(registerUser(usuario)),
   fetchInforme: (auditoriaId) => dispatch(fetchInforme(auditoriaId)),
+  sendReport: (dataClient) => dispatch(sendReport(dataClient)),
   postInforme: (auditoriaId, informe) =>
     dispatch(postInforme(auditoriaId, informe)),
   eliminarInforme: (auditoriaId) => dispatch(eliminarInforme(auditoriaId)),
@@ -160,7 +162,7 @@ class Main extends Component {
               />
             )}
           />
-          <Route path="/enviarInforme" component={() => <EnviarInforme />} />
+          <Route path="/enviarInforme" component={() => <EnviarInforme sendReport={this.props.sendReport} />} />
           <PrivateRoute path="/informe/:itemId" component={ItemWithId} />
           <PrivateRoute
             path="/misAuditorias/:auditoriaId"

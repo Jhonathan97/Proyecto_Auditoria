@@ -3,6 +3,7 @@ const Informes = require("../models/informes");
 const Auditorias = require("../models/auditorias");
 const { populate } = require("../models/auditorias");
 const ITEMS = require("../shared/items");
+var nodemailer = require("nodemailer");
 
 /**
  * Función que permite obtener el informe de un auditoría especifica
@@ -73,6 +74,41 @@ exports.getInforme = (req, res, next) => {
  * para que el error pueda ser visualizado, en caso de que no se encuentre la auditoría, o no sea lider auditor de la
  * auditoría, o la auditoría ya tenga un informe creado respondera con un statusCode: 404 y un mensaje indicando esto.
  */
+exports.sendReport = (req, res) => {
+  var correo="";
+  var contenidoCorreo="prueba sin correo";
+  var transporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false,
+    auth: {
+      user: "keshawn18@ethereal.email",
+      pass: "qsvH7aAGQ4jcdAwxx9",
+    },
+  });
+
+  var mailOptions = {
+    from: "remitente App Auditorias", // sender address
+    to: correo, // list of receivers
+    subject: "Mensaje de envio de Informe de Auditoria", // Subject line
+    text: contenidoCorreo, //
+    //text: req.contenidoCorreo, // subject line
+    //html: `<img src="https://d1hoh05jeo8jse.cloudfront.net/media/google/gmail-icon.jpg"><strong>test</strong>El nombre es ${nombre} <br />con el correo ${correo} y El mensaje es ${mensaje}, ah y el tema es ${tema}.`,
+  };
+  transporter.sendMail(mailOptions, function (error, info){
+    if (error) {
+      console.log(error);
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.json(error.message);
+    } else {
+      console.log("mensaje enviado con correo"+correo+"contenido:"+contenidoCorreo);
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "application/json");
+      res.json(req.body);
+    }
+  });
+};
 exports.crearInforme = (req, res, next) => {
   Auditorias.findOne({
     _id: req.params.auditoriaId,
