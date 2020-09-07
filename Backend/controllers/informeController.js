@@ -75,8 +75,8 @@ exports.getInforme = (req, res, next) => {
  * auditoría, o la auditoría ya tenga un informe creado respondera con un statusCode: 404 y un mensaje indicando esto.
  */
 exports.sendReport = (req, res) => {
-  var correo="";
-  var contenidoCorreo="prueba sin correo";
+  var correo=req.body.correo;
+  var contenidoCorreo=req.body.contenidoCorreo;
   var transporter = nodemailer.createTransport({
     host: "smtp.ethereal.email",
     port: 587,
