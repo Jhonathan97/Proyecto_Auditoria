@@ -4,6 +4,7 @@ var User = require('./models/users')
 var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
 var jwt = require('jsonwebtoken');
+var GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 var config = require('./config');
 
@@ -12,7 +13,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 exports.getToken = function (user) {
-    return jwt.sign(user, config.secretKey, { expiresIn: 7200 });
+    return jwt.sign(user, config.secretKey, { expiresIn: 86400 });
 };
 
 var opts = {};
@@ -44,3 +45,35 @@ exports.verifyAdmin = (req, res, next) => {
     }
     next();
 };
+
+exports.googlePassport = passport.use(new GoogleStrategy({
+    clientID: config.google.clientId,
+    clientSecret: config.google.clientSecret,
+    callbackURL: "http://localhost:4000/users/auth/google/callback",
+    passReqToCallback: true
+}, (request, accessToken, refreshToken, profile, done) => {
+    User.findOne({ googleId: profile.id }, (err, user) => {
+        if (err) {
+            return done(err, false);
+        }
+        if (!err && user !== null) {
+            return done(null, user);
+        }
+        else {
+            user = new User({
+                username: profile.displayName,
+                nombre: profile.name.givenName,
+                apellido: profile.name.familyName,
+                correo_electronico: profile.email
+            });
+            user.googleId = profile.id;
+            user.save((err, user) => {
+                if (err)
+                    return done(err, false);
+                else
+                    return done(null, user);
+            })
+        }
+    });
+}
+));
