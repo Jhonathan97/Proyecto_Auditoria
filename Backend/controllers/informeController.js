@@ -330,39 +330,45 @@ exports.editarItem = (req, res, next) => {
                     (informe) => {
                       res.statusCode = 200;
                       res.setHeader("Content-Type", "application/json");
-                      res.json(informe);
+                      res.json({ success: true, informe: informe });
                     },
                     (err) => next(err)
                   );
                 } else {
-                  err = new Error(
-                    "El Item con el ID: " +
+                  res.statusCode = 404;
+                  res.setHeader("Content-Type", "application/json");
+                  res.json({
+                    success: false,
+                    status:
+                      "El Item con el ID: " +
                       req.params.itemId +
-                      " no se encontro!"
-                  );
-                  err.status = 404;
-                  return next(err);
+                      " no se encontro!",
+                  });
                 }
               } else {
-                err = new Error(
-                  "La auditoría con el ID: " +
+                res.statusCode = 404;
+                res.setHeader("Content-Type", "application/json");
+                res.json({
+                  success: false,
+                  status:
+                    "La auditoría con el ID: " +
                     req.params.auditoriaId +
-                    " no contiene un informe!"
-                );
-                err.status = 404;
-                return next(err);
+                    " no contiene un informe!",
+                });
               }
             },
             (err) => next(err)
           );
         } else {
-          err = new Error(
-            "La auditoría con el ID: " +
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "application/json");
+          res.json({
+            success: false,
+            status:
+              "La auditoría con el ID: " +
               req.params.auditoriaId +
-              " no existe o no pertenece a sus auditorías!"
-          );
-          err.status = 404;
-          return next(err);
+              " no existe o no pertenece a sus auditorías!",
+          });
         }
       },
       (err) => next(err)

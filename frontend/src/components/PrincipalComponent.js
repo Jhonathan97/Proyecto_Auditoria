@@ -12,7 +12,7 @@ const Principal = (props) => {
     }
 
     return (
-        <div class="fondo">
+        <div className="fondo">
             <div className="imagen">
                 <div className="container">
                     <div className="row row-content">

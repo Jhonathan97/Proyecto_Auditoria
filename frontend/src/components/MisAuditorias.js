@@ -30,11 +30,7 @@ function RenderAuditorias({
   });
 
   return (
-    <Card
-      key={auditoria._id}
-      className="tarjeta-auditoria w-50"
-      onClick={() => onClick(auditoria._id)}
-    >
+    <Card key={auditoria._id} className="tarjeta-auditoria w-50">
       <CardHeader className="text-white bg-info">
         <div className="row">
           <h5 className="col-8">{auditoria.nombre}</h5>
@@ -73,12 +69,14 @@ function RenderAuditorias({
           <div className="col-6">{clientes}</div>
         </div>
         <div className="row mt-4">
-          <Link
-            to={`/misAuditorias/${auditoria._id}`}
-            className="mx-auto col-10 btn btn-info"
-          >
-            Ingresar
-          </Link>
+          <Button className="mx-auto col-10 btn btn-info" onClick={() => onClick(auditoria._id)}>
+            <Link
+              to={`/misAuditorias/${auditoria._id}`}
+              className="text-white"
+            >
+              Ingresar
+            </Link>
+          </Button>
         </div>
       </CardBody>
     </Card>

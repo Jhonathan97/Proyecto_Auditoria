@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import CKEditor from "@ckeditor/ckeditor5-react";
 import DecoupledEditor from "@ckeditor/ckeditor5-build-decoupled-document";
 import { baseUrl } from "../shared/baseUrl";
+import { Button } from "reactstrap";
 
 class EditarInforme extends Component {
   state = {
@@ -13,7 +14,14 @@ class EditarInforme extends Component {
     this.setState({
       content: data,
     });
-    console.log(data);
+  };
+
+  handleEditarItem = () => {
+    this.props.editarItem(
+      this.props.auditoriaId,
+      { contenido: this.state.content },
+      this.props.item._id
+    );
   };
 
   render() {
@@ -36,14 +44,21 @@ class EditarInforme extends Component {
           }}
           config={{
             ckfinder: {
-              uploadUrl: baseUrl + "imageUpload" ,
+              uploadUrl: baseUrl + "imageUpload",
             },
           }}
           onChange={this.handleCKeditorState}
           //onChange={(event, editor) => console.log({ event, editor })}
           editor={DecoupledEditor}
-          data="<p>Esta es el área de edición!</p>"
+          data={this.props.item.contenido}
         />
+        <Button
+          color="info"
+          className="mt-5"
+          onClick={() => this.handleEditarItem()}
+        >
+          Guardar
+        </Button>
       </div>
     );
   }
