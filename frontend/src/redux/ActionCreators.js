@@ -475,6 +475,47 @@ export const postItem = (auditoriaId, item) => (dispatch) => {
     .catch((error) => dispatch(informeFailed(error.message)));
 };
 
+export const editarItem = (auditoriaId, item, itemId) => (dispatch) => {
+  const bearer = "Bearer " + localStorage.getItem("token");
+  return fetch(baseUrl + "informes/" + auditoriaId + "/items/" + itemId, {
+    method: "PUT",
+    body: JSON.stringify(item),
+    headers: {
+      Authorization: bearer,
+      "Content-Type": "application/json",
+    },
+    credentials: "same-origin",
+  })
+    .then(
+      (response) => {
+        if (response.ok || response.status === 404) {
+          return response;
+        } else {
+          var error = new Error(
+            "Error " + response.status + ": " + response.statusText
+          );
+          error.response = response;
+          throw error;
+        }
+      },
+      (error) => {
+        var errmess = new Error(error.message);
+        throw errmess;
+      }
+    )
+    .then((response) => response.json())
+    .then((response) => {
+      if (response.success) {
+        dispatch(consultarInforme(response.informe));
+      } else {
+        var error = new Error(response.status);
+        error.response = response;
+        throw error;
+      }
+    })
+    .catch((error) => dispatch(informeFailed(error.message)));
+};
+
 export const deleteInforme = (message) => ({
   type: ActionTypes.DELETE_INFORME,
   message,

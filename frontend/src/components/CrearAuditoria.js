@@ -81,7 +81,7 @@ class CrearAuditoria extends Component {
                     <option>Four</option>
                   </Control.select>
                 </Col>
-                <button class="btn btn-light">
+                <button className="btn btn-light">
                   <img
                     src={logoPlus}
                     alt="+"

@@ -14,6 +14,7 @@ import {
   postInforme,
   eliminarInforme,
   postItem,
+  editarItem,
 } from "../redux/ActionCreators";
 import MisAuditorias from "./MisAuditorias";
 import EnviarInforme from "./EnviarInforme";
@@ -47,6 +48,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(postInforme(auditoriaId, informe)),
   eliminarInforme: (auditoriaId) => dispatch(eliminarInforme(auditoriaId)),
   postItem: (auditoriaId, item) => dispatch(postItem(auditoriaId, item)),
+  editarItem: (auditoriaId, item, itemId) =>
+    dispatch(editarItem(auditoriaId, item, itemId)),
 });
 
 class Main extends Component {
@@ -86,6 +89,8 @@ class Main extends Component {
                 (item) => item._id === match.params.itemId
               )[0]
             }
+            auditoriaId={this.state.auditoriaId}
+            editarItem={this.props.editarItem}
           />
         </div>
       );
